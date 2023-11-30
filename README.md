@@ -1,2 +1,0 @@
-# fullstackopen
-Fullstackopen course solutions
