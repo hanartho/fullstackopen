@@ -1,11 +1,18 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "123123123" },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+
+  useEffect(() => {
+    console.log("effect's happening");
+    axios.get("http://localhost:3001/persons").then((res) => {
+      console.log("promise fulfilled");
+      setPersons(res.data);
+    });
+  }, []);
 
   const addName = (e) => {
     e.preventDefault();
