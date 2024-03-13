@@ -1,10 +1,27 @@
 import { useEffect, useState } from "react";
 import personService from "./services/persons";
 
+const Notification = ({ type, message }) => {
+  console.log("message: ", message, "type: ", type);
+  if (message === null) {
+    return null;
+  } else if (type === "green") {
+    return <div className="green">{message}</div>;
+  } else if (type === "yellow") {
+    return <div className="yellow">{message}</div>;
+  } else if (type === "red") {
+    return <div className="red">{message}</div>;
+  }
+
+  //return <div>{message}</div>;
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [message, setMessage] = useState();
+  const [messageType, setMessageType] = useState();
 
   useEffect(() => {
     console.log("effect's happening");
@@ -24,13 +41,23 @@ const App = () => {
 
     if (persons.find(({ name }) => name === newName)) {
       //console.log("nimi listalla");
-      alert(`${newName} is already added to phonebook`);
+      //alert(`${newName} is already added to phonebook`);
+      setMessage(`${newName} is already added to phonebook`);
+      setMessageType("yellow");
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
       setNewName("");
       setNewNumber("");
     } else {
       //console.log("nimi ei ole listalla");
       personService.create(personObject).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
+        setMessage(`${newName} added to phonebook`);
+        setMessageType("green");
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
         setNewName("");
         setNewNumber("");
       });
@@ -44,6 +71,11 @@ const App = () => {
         .remove(id)
         .then((updatedPersons) => setPersons(updatedPersons));
     }
+    setMessage(`${name} deleted from phonebook`);
+    setMessageType("red");
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
   const handleNameChange = (e) => {
@@ -68,6 +100,7 @@ const App = () => {
           <button type="submit">add</button>
         </div>
       </form>
+      <Notification type={messageType} message={message} />
       <div>
         <h2>Numbers</h2>
         {persons.map((person) => (
