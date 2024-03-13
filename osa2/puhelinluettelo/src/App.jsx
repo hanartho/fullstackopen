@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -8,9 +8,8 @@ const App = () => {
 
   useEffect(() => {
     console.log("effect's happening");
-    axios.get("http://localhost:3001/persons").then((res) => {
-      console.log("promise fulfilled");
-      setPersons(res.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -30,9 +29,20 @@ const App = () => {
       setNewNumber("");
     } else {
       //console.log("nimi ei ole listalla");
-      setPersons(persons.concat(personObject));
-      setNewName("");
-      setNewNumber("");
+      personService.create(personObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
+    }
+  };
+
+  const removeName = (id, name) => {
+    console.log(`delete button clikced`);
+    if (window.confirm(`Delete ${name}`)) {
+      personService
+        .remove(id)
+        .then((updatedPersons) => setPersons(updatedPersons));
     }
   };
 
@@ -62,7 +72,10 @@ const App = () => {
         <h2>Numbers</h2>
         {persons.map((person) => (
           <p key={person.name}>
-            {person.name} {person.number}
+            {person.name} {person.number}{" "}
+            <button onClick={() => removeName(person.id, person.name)}>
+              delete
+            </button>
           </p>
         ))}
       </div>
