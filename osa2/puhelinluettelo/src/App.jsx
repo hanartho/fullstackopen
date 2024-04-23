@@ -51,16 +51,26 @@ const App = () => {
       setNewNumber("");
     } else {
       //console.log("nimi ei ole listalla");
-      personService.create(personObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setMessage(`${newName} added to phonebook`);
-        setMessageType("green");
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
-        setNewName("");
-        setNewNumber("");
-      });
+      personService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setMessage(`${newName} added to phonebook`);
+          setMessageType("green");
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.log("add error", error.response.data);
+          setMessage(error.response.data.error);
+          setMessageType("red");
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+        });
     }
   };
 
